@@ -2,11 +2,11 @@
 
 LaTeX style for preprints published by the [Applied Machine Learning Lab](https://appliedmachinelearning-lab.github.io/).
 
-The style is derived from the official LaTeX style of [Transactions on Machine Learning Research (TMLR)](https://jmlr.org/tmlr/), available at https://github.com/JmlrOrg/tmlr-style-file. The unmodified TMLR files are kept in [`tmlr/`](tmlr/) for reference.
+The style is derived from the official LaTeX style of [Transactions on Machine Learning Research (TMLR)](https://jmlr.org/tmlr/), available at https://github.com/JmlrOrg/tmlr-style-file.
 
 ## Usage
 
-Copy the files in the repository root (everything except `tmlr/`) into your paper directory and start from `_main.tex`:
+Copy the repository into your paper directory and start from `_main.tex`:
 
 ```latex
 \documentclass[10pt]{article}
