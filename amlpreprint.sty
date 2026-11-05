@@ -10,7 +10,8 @@
 %%%%   - renamed to amlpreprint
 %%%%   - removed the TMLR review/accepted/preprint options; the document is
 %%%%     always typeset as a de-anonymized preprint without TMLR mentions
-%%%%   - options authoryear (default) and ieee (numeric citations, IEEEtran.bst)
+%%%%   - options authoryear (default) and ieee (numeric citations, IEEEtran.bst),
+%%%%     and maxbibnames=N (names per reference before "et al.", default 10)
 %%%%   - table of contents works again (\addcontentsline is no longer disabled)
 %%%%   - compact author block (\author[marks]{name}, \affil, \email, \orcid) replaces
 %%%%     the \name/\addr/\email/\AND macros
@@ -33,11 +34,15 @@
 %%%%%%%% Options
 %%   authoryear (default)  (Author, Year) citations, bibliography style amlpreprint.bst
 %%   ieee                  numeric IEEE citations [1], bibliography style IEEEtran.bst
-\newif\ifaml@ieee \aml@ieeefalse
-\DeclareOption{authoryear}{\aml@ieeefalse}
-\DeclareOption{ieee}{\aml@ieeetrue}
-\DeclareOption*{\PackageWarning{amlpreprint}{Unknown option `\CurrentOption'}}
-\ProcessOptions\relax
+%%   maxbibnames=N         at most N names per author/editor list in the
+%%                         references, then "et al." (default 10, 0 = no limit)
+\RequirePackage{kvoptions}
+\SetupKeyvalOptions{family=aml, prefix=aml@}
+\DeclareBoolOption[false]{ieee}
+\DeclareComplementaryOption{authoryear}{ieee}
+\DeclareStringOption[10]{maxbibnames}
+\DeclareDefaultOption{\PackageWarning{amlpreprint}{Unknown option `\CurrentOption'}}
+\ProcessKeyvalOptions*
 
 % Change the overall width of the page.  If these parameters are
 %       changed, they will require corresponding changes in the
@@ -64,6 +69,32 @@
   \def\aml@tmp{#1}%
   \ifx\aml@tmp\aml@defaultbst\aml@bibliographystyle{\aml@bst}%
   \else\aml@bibliographystyle{#1}\fi}
+% Name limit in the references (maxbibnames). BibTeX only reads values from
+% .bib files, so write a control entry to \jobname-bstctl.bib, add that file
+% to \bibliography and cite the entry invisibly. It must be the first
+% citation, as IEEEtran requires for @IEEEtranBSTCTL entries.
+\newwrite\aml@ctlfile
+\let\aml@bibliography\bibliography
+\renewcommand{\bibliography}[1]{\aml@bibliography{\jobname-bstctl,#1}}
+\AtBeginDocument{\if@filesw
+  \immediate\write\@auxout{\string\citation{aml-bstctl}}%
+  \immediate\openout\aml@ctlfile=\jobname-bstctl.bib\relax
+  \ifaml@ieee
+    \ifnum\aml@maxbibnames>\z@
+      \immediate\write\aml@ctlfile{@IEEEtranBSTCTL{aml-bstctl,
+        CTLuse_forced_etal = "yes",
+        CTLmax_names_forced_etal = "\aml@maxbibnames",
+        CTLnames_show_etal = "\aml@maxbibnames"}}%
+    \else
+      \immediate\write\aml@ctlfile{@IEEEtranBSTCTL{aml-bstctl,
+        CTLuse_forced_etal = "no"}}%
+    \fi
+  \else
+    \immediate\write\aml@ctlfile{@amlpreprintctl{aml-bstctl,
+      maxnames = "\aml@maxbibnames"}}%
+  \fi
+  \immediate\closeout\aml@ctlfile
+\fi}
 
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}                  % typewriter: Latin Modern Mono

@@ -24,7 +24,17 @@ Citations are author-year by default, e.g. `\citet{key}` gives "Hinton et al. (2
 \usepackage[ieee]{amlpreprint}
 ```
 
+Options can be combined, e.g. `\usepackage[ieee,maxbibnames=5]{amlpreprint}`.
+
 Then cite with `\cite{key}`, which gives "[1]", and multiple keys are sorted and compressed, e.g. "[1–3]". References are formatted with `IEEEtran.bst` in order of citation. Keep `\bibliographystyle{amlpreprint}` in both modes: it picks `amlpreprint.bst` or `IEEEtran.bst` to match the option.
+
+In both modes, entries in the reference list show at most 10 author (or editor) names, followed by "et al.". Change the limit with `maxbibnames`:
+
+```latex
+\usepackage[maxbibnames=5]{amlpreprint}   % 0 = list all authors
+```
+
+This works through a small control file, `<jobname>-bstctl.bib`, which is generated at each LaTeX run and passed to BibTeX automatically (gitignored). In IEEE mode it uses IEEEtran's own `@IEEEtranBSTCTL` mechanism. IEEEtran replaces an author list identical to the previous entry's with "——", and after truncation that comparison uses the shortened list.
 
 ### Authors
 
@@ -95,7 +105,7 @@ plt.rcParams["axes.prop_cycle"] = plt.cycler(color=TOL_MUTED)
 | File | Purpose |
 | --- | --- |
 | `amlpreprint.sty` | The style (layout, title block, headings) |
-| `amlpreprint.bst` | Author-year bibliography style for `natbib` (copy of `tmlr.bst`) |
+| `amlpreprint.bst` | Author-year bibliography style for `natbib` (`tmlr.bst` plus the `maxbibnames` limit) |
 | `IEEEtran.bst` | IEEE bibliography style for the `ieee` option (unmodified v1.14 from [CTAN](https://ctan.org/pkg/ieeetran), LPPL 1.3) |
 | `_main.tex`, `main.bib` | Example document and bibliography |
 | `figures/` | Figure files (`selective.pdf` from matplotlib, `pipeline.tex` in TikZ) |
@@ -108,6 +118,7 @@ plt.rcParams["axes.prop_cycle"] = plt.cycler(color=TOL_MUTED)
 - Renamed from `tmlr` to `amlpreprint` (`.sty` and `.bst`).
 - TMLR's `accepted`/`preprint` options are gone. The document is always typeset as a de-anonymized preprint without TMLR header or OpenReview line (equivalent to TMLR's `preprint` option).
 - `ieee` option for numeric IEEE citations (`IEEEtran.bst`) instead of the default author-year style.
+- `maxbibnames` option: at most N names per reference entry, then "et al." (default 10). `amlpreprint.bst` is extended for this.
 - Compact author block (`\author[marks]{name}`, `\affil`, `\email`, `\orcid`) instead of TMLR's `\name`/`\addr`/`\email`/`\AND` macros.
 - `\keywords` printed below the abstract, and PDF metadata filled in automatically.
 - Running header alternating authors and title, with `\shortauthors`/`\shorttitle` overrides.

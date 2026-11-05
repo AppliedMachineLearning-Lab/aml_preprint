@@ -1,6 +1,10 @@
 %% File: `amlpreprint.bst'
 %% Copy of tmlr.bst (TMLR style file, Apache-2.0), renamed for the
-%% Applied Machine Learning Lab preprint style. Otherwise unchanged.
+%% Applied Machine Learning Lab preprint style.
+%% Changes: author/editor lists longer than the limit given by an
+%% @amlpreprintctl{key, maxnames = "N"} entry are cut to N names followed by
+%% "et al." (written and cited automatically by amlpreprint.sty's
+%% maxbibnames option; 0 or no control entry means no limit).
 %%
 %% Original header of tmlr.bst:
 %% A copy of iclm2010.bst, which is a modification of `plainnl.bst' for use with natbib package 
@@ -80,6 +84,7 @@ ENTRY
     url
     volume
     year
+    maxnames
   }
   {}
   { label extra.label sort.label short.list }
@@ -219,13 +224,28 @@ FUNCTION {emphasize}
   if$
 }
 
+INTEGERS { aml.maxnames aml.nctl aml.i aml.n aml.d }
+STRINGS { aml.s }
+
+% string of digits -> integer (BibTeX has no multiplication: 10n = 8n + 2n)
+FUNCTION {aml.str.to.int}
+{ 'aml.s :=
+  #0 'aml.n :=
+  #1 'aml.i :=
+    { aml.i aml.s text.length$ > not }
+    { aml.n aml.n + 'aml.d :=
+      aml.d aml.d + aml.d aml.d + + aml.d +
+      aml.s aml.i #1 substring$ chr.to.int$ + "0" chr.to.int$ - 'aml.n :=
+      aml.i #1 + 'aml.i :=
+    }
+  while$
+  aml.n
+}
+
 INTEGERS { nameptr namesleft numnames }
 
-FUNCTION {format.names}
-{ 's :=
-  #1 'nameptr :=
-  s num.names$ 'numnames :=
-  numnames 'namesleft :=
+FUNCTION {format.names.all}
+{ numnames 'namesleft :=
     { namesleft #0 > }
     { s nameptr "{ff~}{vv~}{ll}{, jj}" format.name$ 't :=
       nameptr #1 >
@@ -248,6 +268,31 @@ FUNCTION {format.names}
       namesleft #1 - 'namesleft :=
     }
   while$
+}
+
+FUNCTION {format.names}
+{ 's :=
+  #1 'nameptr :=
+  s num.names$ 'numnames :=
+  aml.maxnames #0 > numnames aml.maxnames > and
+    { aml.maxnames 'namesleft :=
+        { namesleft #0 > }
+        { s nameptr "{ff~}{vv~}{ll}{, jj}" format.name$ 't :=
+          nameptr #1 >
+            { ", " * t * }
+            't
+          if$
+          nameptr #1 + 'nameptr :=
+          namesleft #1 - 'namesleft :=
+        }
+      while$
+      aml.maxnames #1 >
+        { ", et~al." * }
+        { " et~al." * }
+      if$
+    }
+    { format.names.all }
+  if$
 }
 
 FUNCTION {format.key}
@@ -1088,7 +1133,27 @@ MACRO {toplas} {"ACM Transactions on Programming Languages and Systems"}
 MACRO {tcs} {"Theoretical Computer Science"}
 
 
+% Control entry written by amlpreprint.sty (prints nothing). Entry type
+% functions must be defined before READ.
+FUNCTION {amlpreprintctl}
+{ skip$ }
+
 READ
+
+% Read the name limit from the control entry
+FUNCTION {aml.read.ctl}
+{ type$ "amlpreprintctl" =
+    { aml.nctl #1 + 'aml.nctl :=
+      maxnames empty$
+        'skip$
+        { maxnames aml.str.to.int 'aml.maxnames := }
+      if$
+    }
+    'skip$
+  if$
+}
+
+ITERATE {aml.read.ctl}
 
 FUNCTION {sortify}
 { purify$
@@ -1318,7 +1383,7 @@ FUNCTION {editor.organization.sort}
 }
 
 
-FUNCTION {presort}
+FUNCTION {presort.entry}
 { calc.label
   label sortify
   "    "
@@ -1350,6 +1415,16 @@ FUNCTION {presort}
   sort.label *
   #1 entry.max$ substring$
   'sort.key$ :=
+}
+
+FUNCTION {presort}
+{ type$ "amlpreprintctl" =
+    { "" 'label :=
+      "" 'sort.label :=
+      "" 'sort.key$ :=
+    }
+    'presort.entry
+  if$
 }
 
 ITERATE {presort}
@@ -1416,7 +1491,7 @@ FUNCTION {begin.bib}
     'skip$
     { preamble$ write$ newline$ }
   if$
-  "\begin{thebibliography}{" number.label int.to.str$ * "}" *
+  "\begin{thebibliography}{" number.label aml.nctl - int.to.str$ * "}" *
   write$ newline$
   "\providecommand{\natexlab}[1]{#1}"
   write$ newline$
