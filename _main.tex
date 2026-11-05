@@ -1,0 +1,216 @@
+
+\documentclass[10pt]{article} % For LaTeX2e
+\usepackage{amlpreprint}
+
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
+
+\usepackage{hyperref}
+\usepackage{url}
+
+% Figure files live in figures/, table files in tables/
+\graphicspath{{figures/}}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric}
+
+
+\title{Formatting Instructions for Applied Machine Learning Lab Preprints}
+
+% One \author call per author. The optional argument lists the author's
+% affiliation marks, which refer to the \affil entries. \email (corresponding
+% authors) and \orcid may be given several times.
+\author[1,2]{Tobias Deu{\ss}er}
+\author[1,2,3]{Rajkumar Ramamurthy}
+\author[1,2]{Lorenz Sparrenberg}
+\author[1,4]{Rafet Sifa}
+\affil[1]{University of Bonn, Germany}
+\affil[2]{Lamarr-Institute for Machine Learning and Artificial Intelligence, Bonn, Germany}
+\affil[3]{Accura AI Labs, D\"usseldorf, Germany}
+\affil[4]{Fraunhofer IAIS, Sankt Augustin, Germany}
+\email{tdeusser@uni-bonn.de}
+\orcid{0000-0003-4685-0847}
+
+% The running header shows the authors on even and the title on odd pages.
+% Override them if they are too long:
+%\shorttitle{AML Lab Preprints}
+%\shortauthors{Deu{\ss}er et al.}
+
+
+\begin{document}
+
+
+\maketitle
+
+\begin{abstract}
+The abstract paragraph should be indented 1/2~inch on both left and
+right-hand margins. Use 10~point type, with a vertical spacing of 11~points.
+The word \textbf{\large Abstract} must be centered, in bold, and in point size 12. Two
+line spaces precede the abstract. The abstract must be limited to one
+paragraph.
+\end{abstract}
+
+\section{Using the template}
+
+Load the style with {\tt {\textbackslash}usepackage\{amlpreprint\}} and use
+the bibliography style {\tt amlpreprint}. The template is derived from the
+style files of Transactions on Machine Learning Research (TMLR) and always
+produces a de-anonymized preprint without any mention of TMLR. Unlike the
+TMLR template, there are no package options, a table of contents can be
+added with {\tt {\textbackslash}tableofcontents}, and the TeX primitives
+{\tt {\textbackslash}month} and {\tt {\textbackslash}year} are left intact,
+so {\tt {\textbackslash}today} works: this document was compiled on \today.
+
+Authors are given one at a time with
+{\tt {\textbackslash}author[1,2]\{Name\}}, where the optional argument lists
+the affiliation marks defined by {\tt {\textbackslash}affil[1]\{\dots\}}.
+Corresponding authors' addresses are given with
+{\tt {\textbackslash}email\{\dots\}} and ORCID iDs with
+{\tt {\textbackslash}orcid\{\dots\}}. The
+running header alternates between the author names (even pages) and the
+title (odd pages). If either is too long, override it with
+{\tt {\textbackslash}shortauthors\{\dots\}} or
+{\tt {\textbackslash}shorttitle\{\dots\}}.
+
+\section{General formatting}
+\label{gen_inst}
+
+The text is confined within a rectangle 6.5~inches wide and
+9~inches long on US Letter paper. The left margin is 1~inch.
+The body uses 10~point type with a vertical spacing of 11~points.
+Paragraphs are separated by 1/2~line space, with no indentation.
+
+The paper title is 17~point, in bold and left-aligned, followed by the
+compact author block described above.
+
+\section{Headings: first level}
+\label{headings}
+
+First level headings are in bold,
+flush left and in point size 12. One line space before the first level
+heading and 1/2~line space after the first level heading.
+
+\subsection{Headings: second level}
+
+Second level headings are in bold,
+flush left and in point size 10. One line space before the second level
+heading and 1/2~line space after the second level heading.
+
+\subsubsection{Headings: third level}
+
+Third level headings are in bold,
+flush left and in point size 10. One line space before the third level
+heading and 1/2~line space after the third level heading.
+
+\section{Citations, figures, tables, references}
+\label{others}
+
+\subsection{Citations within the text}
+
+Citations within the text are based on the \texttt{natbib} package
+and include the authors' last names and year (with the ``et~al.'' construct
+for more than two authors). When the authors or the publication are
+included in the sentence, the citation should not be in parenthesis, using \verb|\citet{}| (as
+in ``See \citet{Hinton06} for more information.''). Otherwise, the citation
+should be in parenthesis using \verb|\citep{}| (as in ``Deep learning shows promise to make progress
+towards AI~\citep{Bengio+chapter2007}.'').
+
+The corresponding references are listed in alphabetical order of
+authors in the \textbf{References} section.
+
+\subsection{Footnotes}
+
+Indicate footnotes with a number\footnote{Sample of the first footnote} in the
+text. Place the footnotes at the bottom of the page on which they appear.
+Precede the footnote with a horizontal rule of 2~inches.\footnote{Sample of the second footnote}
+
+\subsection{Figures}
+
+Place figure files in the \texttt{figures/} folder. The figure number and
+caption always appear after the figure. The caption is lower case (except for
+the first word and proper nouns), and figures are numbered consecutively.
+Images are included with \verb+\includegraphics+ (the style loads
+\texttt{graphicx} and sets the search path to \texttt{figures/}), with the
+width given as a multiple of the line width, as in Figure~\ref{fig:selective}:
+\begin{verbatim}
+   \includegraphics[width=0.9\linewidth]{selective.pdf}
+\end{verbatim}
+TikZ figures are kept in their own file and included with
+\verb+\input{figures/pipeline.tex}+, as in Figure~\ref{fig:pipeline}.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{selective.pdf}
+\caption{Accuracy as a function of coverage when only the most confident
+fraction of inputs is answered. Example of a PDF figure produced with
+matplotlib using the Tol muted palette.}
+\label{fig:selective}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\input{figures/pipeline.tex}
+\caption{Selective prediction: an input is answered only if the model's
+confidence exceeds a threshold $\tau$. Example of a TikZ figure using the
+palette colours defined by the style.}
+\label{fig:pipeline}
+\end{figure}
+
+\subsection{Colours}
+
+All colours should be colour-blind safe. Use the muted scheme by
+Paul Tol\footnote{\url{https://sronpersonalpages.nl/~pault/}}, which the style
+defines as named \texttt{xcolor} colours (in Tol's recommended order):
+\begin{center}
+\newcommand{\swatch}[1]{\textcolor{#1}{\rule{1.6em}{1.6ex}}~\texttt{#1}}
+\begin{tabular}{llll}
+\swatch{tolrose} & \swatch{tolindigo} & \swatch{tolsand} & \swatch{tolgreen} \\
+\swatch{tolcyan} & \swatch{tolwine} & \swatch{tolteal} & \swatch{tololive} \\
+\swatch{tolpurple} & \swatch{tolpalegrey} & & \\
+\end{tabular}
+\end{center}
+\texttt{tolpalegrey} is reserved for bad or missing data. For plots made
+outside of \LaTeX{}, e.g.\ with matplotlib, use the same colours via their hex
+codes (listed in \texttt{amlpreprint.sty}).
+
+\subsection{Tables}
+
+Place table files in the \texttt{tables/} folder and include them with
+\verb+\input{tables/cost.tex}+. All tables are centered. The table number and
+title always appear before the table. Tables use the \texttt{booktabs} rules
+(\verb+\toprule+, \verb+\midrule+, \verb+\bottomrule+), no vertical lines, and
+alternating rows shaded with \verb+\rowcolor{gray!10}+, as in
+Table~\ref{tab:cost}.
+
+\begin{table}[tb]
+\caption{Requests, input tokens, cost and latency per task category.}
+\label{tab:cost}
+\centering
+\small
+\input{tables/cost.tex}
+\end{table}
+
+\section{Default notation}
+
+To encourage standardized notation, the template includes the notation file
+from the textbook \textit{Deep Learning} \citep{goodfellow2016deep},
+available at \url{https://github.com/goodfeli/dlbook_notation/}. Its use is
+not required and can be disabled by removing the
+\verb+\input{math_commands.tex}+ line. For example, \verb+$\vx \in \R^n$+
+gives $\vx \in \R^n$ and \verb+$\E_{\rx\sim P}[f(x)]$+ gives
+$\E_{\rx\sim P}[f(x)]$.
+
+\subsubsection*{Author Contributions}
+If you'd like to, you may include a section for author contributions.
+
+\subsubsection*{Acknowledgments}
+Use unnumbered third level headings for the acknowledgments. All
+acknowledgments, including those to funding agencies, go at the end of the paper.
+
+\bibliography{main}
+\bibliographystyle{amlpreprint}
+
+\appendix
+\section{Appendix}
+You may include other additional sections here.
+
+\end{document}

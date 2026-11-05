@@ -1,0 +1,296 @@
+%%%% amlpreprint: preprint style of the Applied Machine Learning Lab
+%%%% https://appliedmachinelearning-lab.github.io/
+%%%%
+%%%% Derived from the TMLR style file (tmlr.sty), adapted by Hugo Larochelle
+%%%% and Fabian Pedregosa from the ICLR stylefile Macros and borrowing from
+%%%% the JMLR Macros, last edited January 2021 by Chris J. Maddison.
+%%%% Original: https://github.com/JmlrOrg/tmlr-style-file (Apache-2.0)
+%%%%
+%%%% Changes with respect to tmlr.sty (November 2026):
+%%%%   - renamed to amlpreprint
+%%%%   - removed the TMLR review/accepted/preprint options; the document is
+%%%%     always typeset as a de-anonymized preprint without TMLR mentions
+%%%%   - table of contents works again (\addcontentsline is no longer disabled)
+%%%%   - compact author block (\author[marks]{name}, \affil, \email, \orcid) replaces
+%%%%     the \name/\addr/\email/\AND macros
+%%%%   - running header alternating authors (even pages) and title (odd
+%%%%     pages), overridable via \shortauthors and \shorttitle; the title page
+%%%%     uses the plain page style
+%%%%   - fonts: Palatino clone (newpx) for text and math, Helvetica clone
+%%%%     (TeX Gyre Heros) for sans serif; Latin Modern only for typewriter
+%%%%   - loads graphicx, booktabs, xcolor (table option) and caption (table
+%%%%     captions above tables); defines the colour-blind safe Paul Tol muted
+%%%%     palette (tolrose, tolindigo, ...) and uses it for hyperref link boxes
+%%%%
+%%%% Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{amlpreprint}[2026/11/04 Applied Machine Learning Lab preprint style]
+
+% Change the overall width of the page.  If these parameters are
+%       changed, they will require corresponding changes in the
+%       maketitle section.
+%
+\usepackage{eso-pic} % used by \AddToShipoutPicture
+\RequirePackage{fancyhdr}
+\RequirePackage{natbib}
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}                  % typewriter: Latin Modern Mono
+% Serif and math: Palatino clone (TeX Gyre Pagella)
+\usepackage{newpxtext,newpxmath}
+% Sans serif: Helvetica clone (TeX Gyre Heros). newpxtext sets \qhv@scale so
+% that its x-height matches Palatino.
+\renewcommand{\sfdefault}{qhv}
+
+% Figures and tables (booktabs rules, \rowcolor via xcolor's table option)
+\RequirePackage{graphicx}
+\RequirePackage{booktabs}
+\RequirePackage[table]{xcolor}
+% Table captions go above the table: put the caption skip below them
+\RequirePackage{caption}
+\captionsetup[table]{position=top}
+
+% Colour-blind safe palette: Paul Tol's "muted" scheme
+% (https://sronpersonalpages.nl/~pault/), in the order Tol recommends.
+% Use these for all figures, e.g. matplotlib and TikZ.
+\definecolor{tolrose}{HTML}{CC6677}
+\definecolor{tolindigo}{HTML}{332288}
+\definecolor{tolsand}{HTML}{DDCC77}
+\definecolor{tolgreen}{HTML}{117733}
+\definecolor{tolcyan}{HTML}{88CCEE}
+\definecolor{tolwine}{HTML}{882255}
+\definecolor{tolteal}{HTML}{44AA99}
+\definecolor{tololive}{HTML}{999933}
+\definecolor{tolpurple}{HTML}{AA4499}
+\definecolor{tolpalegrey}{HTML}{DDDDDD} % bad / missing data
+
+% hyperref is loaded after this package: recolour its link boxes with the palette
+\AtBeginDocument{\@ifpackageloaded{hyperref}{\hypersetup{%
+  linkbordercolor=tolrose, citebordercolor=tolteal, urlbordercolor=tolcyan}}{}}
+
+% modification to natbib citations
+\setcitestyle{authoryear,round,citesep={;},aysep={,},yysep={;}}
+
+\renewcommand{\topfraction}{0.95}   % let figure take up nearly whole page
+\renewcommand{\textfraction}{0.05}  % let figure take up nearly whole page
+
+
+%%%%%%%% Options
+\DeclareOption*{\PackageWarning{amlpreprint}{Unknown option `\CurrentOption'}}
+\ProcessOptions\relax
+
+% Specify the dimensions of each page
+
+\setlength{\paperheight}{11in}
+\setlength{\paperwidth}{8.5in}
+
+
+\oddsidemargin 0in    %   Note \oddsidemargin = \evensidemargin
+\evensidemargin 0in
+\marginparwidth 0.07 true in
+\topmargin -0.625in
+\addtolength{\headsep}{0.25in}
+\textheight 9.0 true in       % Height of text (including footnotes & figures)
+\textwidth 6.5 true in        % Width of text line.
+\widowpenalty=10000
+\clubpenalty=10000
+
+
+\flushbottom \sloppy
+
+% Table of contents: entries are paragraphs, so suppress the document-wide
+% \parskip inside it to keep the list compact.
+\let\aml@tableofcontents\tableofcontents
+\renewcommand{\tableofcontents}{\begingroup\parskip\z@\aml@tableofcontents\endgroup}
+
+% Title stuff, taken from deproc.
+\def\maketitle{\par
+\begingroup
+   \def\thefootnote{\fnsymbol{footnote}}
+   \def\@makefnmark{\hbox to 0pt{$^{\@thefnmark}$\hss}} % for perfect author
+                                                        % name centering
+%   The footnote-mark was overlapping the footnote-text,
+%   added the following to fix this problem               (MK)
+   \long\def\@makefntext##1{\parindent 1em\noindent
+                            \hbox to1.8em{\hss $\m@th ^{\@thefnmark}$}##1}
+   \global\let\aml@savedtitle\@title
+   \@maketitle \@thanks
+   \thispagestyle{plain}
+\endgroup
+\setcounter{footnote}{0}
+\let\maketitle\relax \let\@maketitle\relax
+\gdef\@thanks{}\gdef\@author{}\gdef\@title{}\let\thanks\relax}
+
+\newlength\aftertitskip     \newlength\beforetitskip
+\newlength\interauthorskip  \newlength\aftermaketitskip
+
+%% Changeable parameters.
+\setlength\aftertitskip{0.3in plus 0.2in minus 0.2in}
+\setlength\beforetitskip{0.05in plus 0.08in minus 0.08in}
+\setlength\interauthorskip{0.08in plus 0.1in minus 0.1in}
+\setlength\aftermaketitskip{0.3in plus 0.1in minus 0.1in}
+
+%% Compact author block
+%%   \author[1,2]{First Author}   one call per author, optional affiliation marks
+%%   \affil[1]{Institution, City, Country}
+%%   \email{first.author@example.com}   corresponding author(s)
+%%   \orcid{0000-0000-0000-0000}
+% Each list stores deferred calls (\aml@author{marks}{name}, ...) so that the
+% title block and the running header can render them differently.
+\def\aml@authors{}
+\def\aml@affils{}
+\def\aml@emails{}
+\def\aml@orcids{}
+\newcount\aml@nemails
+\newcount\aml@norcids
+\renewcommand{\author}[2][]{%
+  \g@addto@macro\aml@authors{\aml@author{#1}{#2}}%
+  \gdef\@author{\aml@authornames}}
+\newcommand{\affil}[2][]{\g@addto@macro\aml@affils{\aml@affil{#1}{#2}}}
+\newcommand{\email}[1]{\global\advance\aml@nemails\@ne
+  \g@addto@macro\aml@emails{\aml@email{#1}}}
+\newcommand{\orcid}[1]{\global\advance\aml@norcids\@ne
+  \g@addto@macro\aml@orcids{\aml@orcid{#1}}}
+
+% Labels in front of the email and ORCID lines (singular/plural)
+\def\aml@emailname{Corresponding author}
+\def\aml@emailsname{Corresponding authors}
+\def\aml@orcidname{ORCID iD}
+\def\aml@orcidsname{ORCID iDs}
+% Link if hyperref is loaded (it is loaded after this package)
+\def\aml@link#1#2{\ifdefined\href\href{#1}{\texttt{#2}}\else\texttt{#2}\fi}
+
+% Render a list, putting \aml@sep between consecutive entries
+\def\aml@sep{}
+\def\aml@nextsep#1{\aml@sep\gdef\aml@sep{#1}}
+\def\aml@mark#1{\if\relax\detokenize{#1}\relax\else\textsuperscript{#1}\fi}
+\def\aml@authornames{\begingroup
+  \gdef\aml@sep{}%
+  \def\aml@author##1##2{\aml@nextsep{, }##2}%
+  \let\thanks\@gobble \let\footnote\@gobble
+  \aml@authors\endgroup}
+
+\def\aml@authorblock{%
+  {\normalsize\bfseries\raggedright
+   \gdef\aml@sep{}%
+   \def\aml@author##1##2{\aml@nextsep{, }\mbox{##2\aml@mark{##1}}}%
+   \aml@authors\par}%
+  \ifx\aml@affils\@empty\else
+    {\small\parskip\z@\vskip 0.5ex
+     \def\aml@affil##1##2{\noindent\aml@mark{##1}##2\par}%
+     \aml@affils}%
+  \fi
+  {\small\parskip\z@
+   \ifnum\numexpr\aml@nemails+\aml@norcids\relax>\z@\vskip 0.75em\fi
+   \ifx\aml@emails\@empty\else
+     \noindent\ifnum\aml@nemails>\@ne\aml@emailsname\else\aml@emailname\fi:
+     \gdef\aml@sep{}%
+     \def\aml@email##1{\aml@nextsep{, }\aml@link{mailto:##1}{##1}}%
+     \aml@emails\par
+   \fi
+   \ifx\aml@orcids\@empty\else
+     \noindent\ifnum\aml@norcids>\@ne\aml@orcidsname\else\aml@orcidname\fi:
+     \gdef\aml@sep{}%
+     \def\aml@orcid##1{\aml@nextsep{, }\aml@link{https://orcid.org/##1}{##1}}%
+     \aml@orcids\par
+   \fi}}
+
+%% Running header: authors on even pages, title on odd pages
+%%   \shorttitle{...}    overrides the title in the header
+%%   \shortauthors{...}  overrides the author list in the header
+\def\aml@savedtitle{}
+\def\aml@shorttitle{}
+\def\aml@shortauthors{}
+\newcommand{\shorttitle}[1]{\gdef\aml@shorttitle{#1}}
+\newcommand{\shortauthors}[1]{\gdef\aml@shortauthors{#1}}
+\def\aml@runninghead{{\small\itshape
+  \def\\{\unskip\space\ignorespaces}%
+  \let\thanks\@gobble \let\footnote\@gobble
+  \ifodd\value{page}%
+    \ifx\aml@shorttitle\@empty\aml@savedtitle\else\aml@shorttitle\fi
+  \else
+    \ifx\aml@shortauthors\@empty\aml@authornames\else\aml@shortauthors\fi
+  \fi}}
+
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhead[C]{\aml@runninghead}
+
+% Title
+\def\@maketitle{\vbox{\hsize\textwidth
+{\LARGE\bf\sffamily \@title\par}\vskip \aftertitskip
+\aml@authorblock
+\vskip 0.3in minus 0.1in}}
+
+\renewenvironment{abstract}{\vskip.075in\centerline{\large\bf\sffamily
+Abstract}\vspace{0.5ex}\begin{quote}}{\par\end{quote}\vskip 1ex}
+
+% sections with less space
+\def\section{\@startsection {section}{1}{\z@}{-2.0ex plus
+    -0.5ex minus -.2ex}{1.5ex plus 0.3ex
+minus0.2ex}{\large\bf\raggedright\sffamily}}
+
+\def\subsection{\@startsection{subsection}{2}{\z@}{-1.8ex plus
+-0.5ex minus -.2ex}{0.8ex plus .2ex}{\normalsize\bf\raggedright\sffamily}}
+\def\subsubsection{\@startsection{subsubsection}{3}{\z@}{-1.5ex
+plus      -0.5ex minus -.2ex}{0.5ex plus
+.2ex}{\normalsize\bf\raggedright\sffamily}}
+\def\paragraph{\@startsection{paragraph}{4}{\z@}{1.5ex plus
+0.5ex minus .2ex}{-1em}{\normalsize\bf}}
+\def\subparagraph{\@startsection{subparagraph}{5}{\z@}{1.5ex plus
+  0.5ex minus .2ex}{-1em}{\normalsize\bf}}
+\def\subsubsubsection{\vskip
+5pt{\noindent\normalsize\rm\raggedright\sffamily}}
+
+
+% Footnotes
+\footnotesep 6.65pt %
+\skip\footins 9pt plus 4pt minus 2pt
+\def\footnoterule{\kern-3pt \hrule width 12pc \kern 2.6pt }
+\setcounter{footnote}{0}
+
+% Lists and paragraphs
+\parindent 0pt
+\topsep 4pt plus 1pt minus 2pt
+\partopsep 1pt plus 0.5pt minus 0.5pt
+\itemsep 2pt plus 1pt minus 0.5pt
+\parsep 2pt plus 1pt minus 0.5pt
+\parskip .5pc
+
+
+%\leftmargin2em
+\leftmargin3pc
+\leftmargini\leftmargin \leftmarginii 2em
+\leftmarginiii 1.5em \leftmarginiv 1.0em \leftmarginv .5em
+
+%\labelsep \labelsep 5pt
+
+\def\@listi{\leftmargin\leftmargini}
+\def\@listii{\leftmargin\leftmarginii
+   \labelwidth\leftmarginii\advance\labelwidth-\labelsep
+   \topsep 2pt plus 1pt minus 0.5pt
+   \parsep 1pt plus 0.5pt minus 0.5pt
+   \itemsep \parsep}
+\def\@listiii{\leftmargin\leftmarginiii
+    \labelwidth\leftmarginiii\advance\labelwidth-\labelsep
+    \topsep 1pt plus 0.5pt minus 0.5pt
+    \parsep \z@ \partopsep 0.5pt plus 0pt minus 0.5pt
+    \itemsep \topsep}
+\def\@listiv{\leftmargin\leftmarginiv
+     \labelwidth\leftmarginiv\advance\labelwidth-\labelsep}
+\def\@listv{\leftmargin\leftmarginv
+     \labelwidth\leftmarginv\advance\labelwidth-\labelsep}
+\def\@listvi{\leftmargin\leftmarginvi
+     \labelwidth\leftmarginvi\advance\labelwidth-\labelsep}
+
+\abovedisplayskip 7pt plus2pt minus5pt%
+\belowdisplayskip \abovedisplayskip
+\abovedisplayshortskip  0pt plus3pt%
+\belowdisplayshortskip  4pt plus3pt minus3pt%
+
+
+\def\toptitlebar{\hrule height4pt\vskip .25in\vskip-\parskip}
+
+\def\bottomtitlebar{\vskip .29in\vskip-\parskip\hrule height1pt\vskip
+.09in} %
