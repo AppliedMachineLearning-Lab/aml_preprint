@@ -37,6 +37,18 @@ The running header shows the author names on even pages and the title on odd pag
 \shortauthors{Author et al.}
 ```
 
+Keywords are printed below the abstract as "***Keywords*** Keyword1 · Keyword2 · …":
+
+```latex
+\keywords{Keyword1, Keyword2, Keyword3}   % in the preamble
+```
+
+The PDF metadata (title, authors, keywords) is filled in from `\title`, `\author` and `\keywords`. Set other fields, or override these, with `\hypersetup` in the preamble:
+
+```latex
+\hypersetup{pdfsubject={cs.CL, cs.AI}}
+```
+
 Build with
 
 ```sh
@@ -83,6 +95,7 @@ plt.rcParams["axes.prop_cycle"] = plt.cycler(color=TOL_MUTED)
 - Renamed from `tmlr` to `amlpreprint` (`.sty` and `.bst`).
 - No package options. The document is always typeset as a de-anonymized preprint without TMLR header or OpenReview line (equivalent to TMLR's `preprint` option).
 - Compact author block (`\author[marks]{name}`, `\affil`, `\email`, `\orcid`) instead of TMLR's `\name`/`\addr`/`\email`/`\AND` macros.
+- `\keywords` printed below the abstract, and PDF metadata filled in automatically.
 - Running header alternating authors and title, with `\shortauthors`/`\shorttitle` overrides.
 - Fonts: Palatino clone (TeX Gyre Pagella via `newpxtext`/`newpxmath`) for text and math, Helvetica clone (TeX Gyre Heros) for sans serif, instead of Latin Modern.
 - Loads `graphicx`, `booktabs`, `xcolor[table]` and `caption`, defines the colour-blind safe Tol muted palette, and uses it for hyperref's link boxes.

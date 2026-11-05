@@ -21,6 +21,8 @@
 %%%%   - loads graphicx, booktabs, xcolor (table option) and caption (table
 %%%%     captions above tables); defines the colour-blind safe Paul Tol muted
 %%%%     palette (tolrose, tolindigo, ...) and uses it for hyperref link boxes
+%%%%   - \keywords command, printed below the abstract; PDF title, authors and
+%%%%     keywords are filled in from \title, \author and \keywords
 %%%%
 %%%% Licensed under the Apache License, Version 2.0 (see LICENSE).
 
@@ -65,9 +67,20 @@
 \definecolor{tolpurple}{HTML}{AA4499}
 \definecolor{tolpalegrey}{HTML}{DDDDDD} % bad / missing data
 
-% hyperref is loaded after this package: recolour its link boxes with the palette
-\AtBeginDocument{\@ifpackageloaded{hyperref}{\hypersetup{%
-  linkbordercolor=tolrose, citebordercolor=tolteal, urlbordercolor=tolcyan}}{}}
+% hyperref is loaded after this package. At \begin{document}: recolour its
+% link boxes with the palette and fill in the PDF title, authors and keywords
+% from \title, \author and \keywords, unless they were set with \hypersetup.
+\let\aml@notitle\@title
+\AtBeginDocument{\@ifpackageloaded{hyperref}{%
+  \hypersetup{linkbordercolor=tolrose, citebordercolor=tolteal,
+              urlbordercolor=tolcyan}%
+  \pdfstringdefDisableCommands{\let\\\@empty\let\thanks\@gobble
+                               \let\footnote\@gobble}%
+  \ifx\@pdftitle\@empty\ifx\@title\aml@notitle\else
+    \hypersetup{pdftitle={\@title}}\fi\fi
+  \ifx\@pdfauthor\@empty\hypersetup{pdfauthor={\aml@pdfauthors}}\fi
+  \ifx\@pdfkeywords\@empty\hypersetup{pdfkeywords={\aml@keywords}}\fi
+}{}}
 
 % modification to natbib citations
 \setcitestyle{authoryear,round,citesep={;},aysep={,},yysep={;}}
@@ -144,8 +157,11 @@
 \def\aml@orcids{}
 \newcount\aml@nemails
 \newcount\aml@norcids
+\def\aml@pdfauthors{}
 \renewcommand{\author}[2][]{%
   \g@addto@macro\aml@authors{\aml@author{#1}{#2}}%
+  \ifx\aml@pdfauthors\@empty\gdef\aml@pdfauthors{#2}%
+  \else\g@addto@macro\aml@pdfauthors{, #2}\fi
   \gdef\@author{\aml@authornames}}
 \newcommand{\affil}[2][]{\g@addto@macro\aml@affils{\aml@affil{#1}{#2}}}
 \newcommand{\email}[1]{\global\advance\aml@nemails\@ne
@@ -224,7 +240,19 @@
 \vskip 0.3in minus 0.1in}}
 
 \renewenvironment{abstract}{\vskip.075in\centerline{\large\bf\sffamily
-Abstract}\vspace{0.5ex}\begin{quote}}{\par\end{quote}\vskip 1ex}
+Abstract}\vspace{0.5ex}\begin{quote}}{\aml@printkeywords\par\end{quote}\vskip 1ex}
+
+%% Keywords, printed at the end of the abstract and used as PDF keywords
+%%   \keywords{Keyword1, Keyword2, ...}   (before \end{abstract})
+\def\aml@keywords{}
+\newcommand{\keywords}[1]{\gdef\aml@keywords{#1}}
+\def\aml@printkeywords{%
+  \ifx\aml@keywords\@empty\else
+    \par\noindent\textbf{\textit{Keywords}}\quad
+    \gdef\aml@sep{}%
+    \@for\aml@kw:=\aml@keywords\do{%
+      \aml@nextsep{\unskip\nobreak\enspace$\cdot$\enspace}\ignorespaces\aml@kw}%
+  \fi}
 
 % sections with less space
 \def\section{\@startsection {section}{1}{\z@}{-2.0ex plus

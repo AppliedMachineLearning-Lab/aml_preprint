@@ -22,7 +22,7 @@
 \author[1,2]{Tobias Deu{\ss}er}
 \author[1,2,3]{Rajkumar Ramamurthy}
 \author[1,2]{Lorenz Sparrenberg}
-\author[1,4]{Rafet Sifa}
+\author[1,2,4]{Rafet Sifa}
 \affil[1]{University of Bonn, Germany}
 \affil[2]{Lamarr-Institute for Machine Learning and Artificial Intelligence, Bonn, Germany}
 \affil[3]{Accura AI Labs, D\"usseldorf, Germany}
@@ -34,6 +34,13 @@
 % Override them if they are too long:
 %\shorttitle{AML Lab Preprints}
 %\shortauthors{Deu{\ss}er et al.}
+
+% Printed below the abstract, comma-separated
+\keywords{Preprint, Template, \LaTeX, Colour-Blind Safe Figures}
+
+% PDF metadata: title, authors and keywords are filled in from \title,
+% \author and \keywords. Set further fields, or override those, here:
+\hypersetup{pdfsubject={cs.LG}}
 
 
 \begin{document}
@@ -70,6 +77,13 @@ running header alternates between the author names (even pages) and the
 title (odd pages). If either is too long, override it with
 {\tt {\textbackslash}shortauthors\{\dots\}} or
 {\tt {\textbackslash}shorttitle\{\dots\}}.
+
+Keywords are given as a comma-separated list with
+{\tt {\textbackslash}keywords\{Keyword1, Keyword2\}} in the preamble and are
+printed below the abstract. The PDF title, authors and keywords are filled in
+automatically from {\tt {\textbackslash}title}, {\tt {\textbackslash}author}
+and {\tt {\textbackslash}keywords}. Further metadata such as the subject, or
+overrides, are set with {\tt {\textbackslash}hypersetup\{pdfsubject=\{\dots\}\}}.
 
 \section{General formatting}
 \label{gen_inst}
@@ -181,7 +195,7 @@ title always appear before the table. Tables use the \texttt{booktabs} rules
 alternating rows shaded with \verb+\rowcolor{gray!10}+, as in
 Table~\ref{tab:cost}.
 
-\begin{table}[tb]
+\begin{table}[htb]
 \caption{Requests, input tokens, cost and latency per task category.}
 \label{tab:cost}
 \centering
