@@ -249,7 +249,7 @@ Abstract}\vspace{0.5ex}\begin{quote}}{\par\end{quote}\aml@printkeywords\vskip 1e
 \newcommand{\keywords}[1]{\gdef\aml@keywords{#1}}
 \def\aml@printkeywords{%
   \ifx\aml@keywords\@empty\else
-    \par\noindent\textbf{\textit{Keywords}}\quad
+    \par\noindent{\sffamily\bfseries\itshape Keywords}\quad
     \gdef\aml@sep{}%
     \@for\aml@kw:=\aml@keywords\do{%
       \aml@nextsep{\unskip\nobreak\enspace$\cdot$\enspace}\ignorespaces\aml@kw}%
