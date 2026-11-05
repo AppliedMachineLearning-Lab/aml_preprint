@@ -16,6 +16,18 @@ Copy the repository into your paper directory and start from `_main.tex`:
 \bibliographystyle{amlpreprint}
 ```
 
+### Citation style
+
+Citations are author-year by default, e.g. `\citet{key}` gives "Hinton et al. (2006)" and `\citep{key}` gives "(Hinton et al., 2006)". For numeric IEEE-style citations, add the `ieee` option:
+
+```latex
+\usepackage[ieee]{amlpreprint}
+```
+
+Then cite with `\cite{key}`, which gives "[1]", and multiple keys are sorted and compressed, e.g. "[1–3]". References are formatted with `IEEEtran.bst` in order of citation. Keep `\bibliographystyle{amlpreprint}` in both modes: it picks `amlpreprint.bst` or `IEEEtran.bst` to match the option.
+
+### Authors
+
 Authors, affiliations, corresponding authors and ORCID iDs:
 
 ```latex
@@ -84,6 +96,7 @@ plt.rcParams["axes.prop_cycle"] = plt.cycler(color=TOL_MUTED)
 | --- | --- |
 | `amlpreprint.sty` | The style (layout, title block, headings) |
 | `amlpreprint.bst` | Author-year bibliography style for `natbib` (copy of `tmlr.bst`) |
+| `IEEEtran.bst` | IEEE bibliography style for the `ieee` option (unmodified v1.14 from [CTAN](https://ctan.org/pkg/ieeetran), LPPL 1.3) |
 | `_main.tex`, `main.bib` | Example document and bibliography |
 | `figures/` | Figure files (`selective.pdf` from matplotlib, `pipeline.tex` in TikZ) |
 | `tables/` | Table files (`cost.tex`, the preferred table layout) |
@@ -93,7 +106,8 @@ plt.rcParams["axes.prop_cycle"] = plt.cycler(color=TOL_MUTED)
 ## Differences from the TMLR template
 
 - Renamed from `tmlr` to `amlpreprint` (`.sty` and `.bst`).
-- No package options. The document is always typeset as a de-anonymized preprint without TMLR header or OpenReview line (equivalent to TMLR's `preprint` option).
+- TMLR's `accepted`/`preprint` options are gone. The document is always typeset as a de-anonymized preprint without TMLR header or OpenReview line (equivalent to TMLR's `preprint` option).
+- `ieee` option for numeric IEEE citations (`IEEEtran.bst`) instead of the default author-year style.
 - Compact author block (`\author[marks]{name}`, `\affil`, `\email`, `\orcid`) instead of TMLR's `\name`/`\addr`/`\email`/`\AND` macros.
 - `\keywords` printed below the abstract, and PDF metadata filled in automatically.
 - Running header alternating authors and title, with `\shortauthors`/`\shorttitle` overrides.
@@ -105,3 +119,5 @@ plt.rcParams["axes.prop_cycle"] = plt.cycler(color=TOL_MUTED)
 ## License
 
 Licensed under the Apache License 2.0, see [LICENSE](LICENSE). The TMLR style files this template is based on are Copyright their respective authors (Hugo Larochelle, Fabian Pedregosa, Chris J. Maddison and contributors, adapted from the ICLR and JMLR styles) and are distributed under the same license. Modified files carry a notice describing the changes.
+
+`IEEEtran.bst` is Copyright (c) 2003-2015 Michael Shell and distributed unmodified under the [LaTeX Project Public License](https://www.latex-project.org/lppl/) 1.3.
