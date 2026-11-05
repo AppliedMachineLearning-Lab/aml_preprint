@@ -240,9 +240,10 @@
 \vskip 0.3in minus 0.1in}}
 
 \renewenvironment{abstract}{\vskip.075in\centerline{\large\bf\sffamily
-Abstract}\vspace{0.5ex}\begin{quote}}{\aml@printkeywords\par\end{quote}\vskip 1ex}
+Abstract}\vspace{0.5ex}\begin{quote}}{\par\end{quote}\aml@printkeywords\vskip 1ex}
 
-%% Keywords, printed at the end of the abstract and used as PDF keywords
+%% Keywords, printed below the abstract at full text width and used as PDF
+%% keywords
 %%   \keywords{Keyword1, Keyword2, ...}   (before \end{abstract})
 \def\aml@keywords{}
 \newcommand{\keywords}[1]{\gdef\aml@keywords{#1}}
